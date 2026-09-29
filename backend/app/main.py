@@ -99,12 +99,16 @@ def get_single_source_components(product_name: str):
 
 
 @app.get("/shipments/delayed")
-def get_delayed_shipments():
+def get_delayed_shipments(product_name: str | None = None):
     query = """
     MATCH (factory:Factory)-[:DISPATCHES]->(shipment:Shipment)
           -[:DELIVERS_TO]->(warehouse:Warehouse),
           (shipment)-[:CARRIES]->(product:Product)
     WHERE shipment.status = "Delayed"
+      AND (
+          $product_name IS NULL
+          OR toLower(product.name) = toLower($product_name)
+      )
     RETURN
         shipment.shipment_id AS shipment,
         factory.name AS factory,
@@ -115,48 +119,13 @@ def get_delayed_shipments():
     """
 
     with driver.session() as session:
-        result = session.run(query)
+        result = session.run(
+            query,
+            product_name=product_name
+        )
 
         return {
             "delayed_shipments": [
                 record.data() for record in result
             ]
         }
-
-
-
-@app.get("/shipments/{shipment_id}/impact")
-def get_shipment_impact(shipment_id: str):
-    query = """
-    MATCH (shipment:Shipment)-[:CARRIES]->(product:Product)
-    WHERE shipment.shipment_id = $shipment_id
-
-    MATCH (supplier:Supplier)-[:SUPPLIES]->(component:Component)
-          -[:USED_IN]->(product)
-
-    RETURN
-        shipment.shipment_id AS shipment,
-        shipment.status AS status,
-        product.name AS product,
-        collect(DISTINCT {
-            supplier: supplier.name,
-            risk_level: supplier.risk_level,
-            component: component.name
-        }) AS supplier_impact
-    """
-
-    with driver.session() as session:
-        result = session.run(
-            query,
-            shipment_id=shipment_id
-        )
-
-        record = result.single()
-
-        if not record:
-            return {
-                "shipment": shipment_id,
-                "message": "Shipment not found"
-            }
-
-        return record.data()

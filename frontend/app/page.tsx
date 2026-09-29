@@ -67,7 +67,9 @@ export default function Home() {
               product
             )}/single-source-components`
           ),
-          fetch(`${API_URL}/shipments/delayed`),
+          fetch(
+            `${API_URL}/shipments/delayed?product_name=${encodeURIComponent(product)}`
+          ),
         ]);
 
         if (
