@@ -79,22 +79,21 @@ export default function Home() {
             delayedResponse,
             graphResponse,
           ] = await Promise.all([
-          fetch(
-            `${API_URL}/products/${encodeURIComponent(product)}/graph`
-          ),
-          fetch(
-            `${API_URL}/products/${encodeURIComponent(product)}/suppliers`
-          ),
-          fetch(
-            `${API_URL}/products/${encodeURIComponent(
-              product
-            )}/single-source-components`
-          ),
-          fetch(
-            `${API_URL}/shipments/delayed?product_name=${encodeURIComponent(product)}`
-          ),
-        ]);
-
+            fetch(
+              `${API_URL}/products/${encodeURIComponent(product)}/suppliers`
+            ),
+            fetch(
+              `${API_URL}/products/${encodeURIComponent(
+                product
+              )}/single-source-components`
+            ),
+            fetch(
+              `${API_URL}/shipments/delayed?product_name=${encodeURIComponent(product)}`
+            ),
+            fetch(
+              `${API_URL}/products/${encodeURIComponent(product)}/graph`
+            ),
+          ]);
         if (
           !suppliersResponse.ok ||
           !singleSourceResponse.ok ||
