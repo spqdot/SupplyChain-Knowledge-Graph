@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import SupplyChainGraph from "./components/SupplyChainGraph";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://supplychain-kg-api-spq-btcde5bqhugtfmbw.westeurope-01.azurewebsites.net";
 
@@ -33,6 +34,23 @@ type ShipmentImpact = {
     component: string;
   }[];
 };
+type GraphNode = {
+  id: string;
+  label: string;
+  category: "Product" | "Component" | "Supplier";
+};
+
+type GraphEdge = {
+  source: string;
+  target: string;
+  label: string;
+};
+
+type GraphData = {
+  product: string;
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+};
 
 export default function Home() {
   const [product, setProduct] = useState("Electric Vehicle");
@@ -44,6 +62,7 @@ export default function Home() {
   );
   const [shipmentImpact, setShipmentImpact] =
     useState<ShipmentImpact | null>(null);
+  const [graphData, setGraphData] = useState<GraphData | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -55,10 +74,14 @@ export default function Home() {
         setError("");
 
         const [
-          suppliersResponse,
-          singleSourceResponse,
-          delayedResponse,
-        ] = await Promise.all([
+            suppliersResponse,
+            singleSourceResponse,
+            delayedResponse,
+            graphResponse,
+          ] = await Promise.all([
+          fetch(
+            `${API_URL}/products/${encodeURIComponent(product)}/graph`
+          ),
           fetch(
             `${API_URL}/products/${encodeURIComponent(product)}/suppliers`
           ),
@@ -75,7 +98,8 @@ export default function Home() {
         if (
           !suppliersResponse.ok ||
           !singleSourceResponse.ok ||
-          !delayedResponse.ok
+          !delayedResponse.ok ||
+          !graphResponse.ok
         ) {
           throw new Error("Failed to load supply chain data.");
         }
@@ -83,6 +107,8 @@ export default function Home() {
         const suppliersData = await suppliersResponse.json();
         const singleSourceData = await singleSourceResponse.json();
         const delayedData = await delayedResponse.json();
+        const graphDataResponse = await graphResponse.json();
+        setGraphData(graphDataResponse);
 
         setSuppliers(suppliersData.suppliers);
         setSingleSource(singleSourceData.single_source_components);
@@ -178,6 +204,33 @@ export default function Home() {
 
         {!loading && !error && (
           <>
+          {/* Supply Chain Knowledge Graph */}
+<section className="mb-8 rounded-2xl border border-slate-800 bg-slate-900 p-6">
+  <div className="mb-5">
+    <h2 className="text-xl font-semibold">
+      Supply Chain Knowledge Graph
+    </h2>
+    <p className="mt-1 text-sm text-slate-400">
+      Explore suppliers, components, and their relationships for {product}.
+    </p>
+  </div>
+
+  {graphData ? (
+    <>
+      <div className="mb-4 flex flex-wrap gap-4 text-sm text-slate-300">
+        <span>Nodes: {graphData.nodes.length}</span>
+        <span>Relationships: {graphData.edges.length}</span>
+      </div>
+
+      <SupplyChainGraph
+        nodes={graphData.nodes}
+        edges={graphData.edges}
+      />
+    </>
+  ) : (
+    <p className="text-slate-400">Loading graph data...</p>
+  )}
+</section>
             {/* Summary cards */}
             <section className="mb-8 grid gap-4 md:grid-cols-3">
               <SummaryCard

@@ -97,7 +97,86 @@ def get_single_source_components(product_name: str):
             ]
         }
 
+@app.get("/products/{product_name}/graph")
+def get_product_graph(product_name: str):
+    query = """
+    MATCH (product:Product)
+    WHERE toLower(product.name) = toLower($product_name)
 
+    OPTIONAL MATCH (component:Component)-[:USED_IN]->(product)
+    OPTIONAL MATCH (supplier:Supplier)-[:SUPPLIES]->(component)
+
+    WITH product,
+        collect(DISTINCT CASE
+            WHEN component IS NOT NULL THEN {
+                id: elementId(component),
+                label: component.name,
+                category: "Component"
+            }
+        END) AS components,
+        collect(DISTINCT CASE
+            WHEN supplier IS NOT NULL THEN {
+                id: elementId(supplier),
+                label: supplier.name,
+                category: "Supplier"
+            }
+        END) AS suppliers,
+        collect(DISTINCT CASE
+            WHEN component IS NOT NULL THEN {
+                source: elementId(component),
+                target: elementId(product),
+                label: "USED_IN"
+            }
+        END) AS component_edges,
+        collect(DISTINCT CASE
+            WHEN supplier IS NOT NULL THEN {
+                source: elementId(supplier),
+                target: elementId(component),
+                label: "SUPPLIES"
+            }
+        END) AS supplier_edges
+
+    RETURN
+        {
+            id: elementId(product),
+            label: product.name,
+            category: "Product"
+        } AS product,
+        components,
+        suppliers,
+        component_edges,
+        supplier_edges
+    """
+
+    with driver.session() as session:
+        result = session.run(
+            query,
+            product_name=product_name
+        ).single()
+
+        if result is None:
+            return {
+                "product": product_name,
+                "nodes": [],
+                "edges": []
+            }
+
+        nodes = (
+            [result["product"]]
+            + [node for node in result["components"] if node]
+            + [node for node in result["suppliers"] if node]
+        )
+
+        edges = (
+            [edge for edge in result["component_edges"] if edge]
+            + [edge for edge in result["supplier_edges"] if edge]
+        )
+
+        return {
+            "product": product_name,
+            "nodes": nodes,
+            "edges": edges
+        }
 @app.get("/shipments/delayed")
 def get_delayed_shipments(product_name: str | None = None):
     query = """
