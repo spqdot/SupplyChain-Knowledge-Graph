@@ -51,6 +51,187 @@ def create_supply_chain_graph():
     MERGE (p2:Product {name: "Electric Scooter"})
     SET p2.category = "Mobility"
 
+    // =========================
+    // NEW SUPPLIERS
+    // =========================
+
+    MERGE (s4:Supplier {name: "SiliconCore Semiconductors"})
+    SET s4.country = "Taiwan",
+        s4.risk_level = "Medium"
+
+    MERGE (s5:Supplier {name: "Nova Memory Systems"})
+    SET s5.country = "South Korea",
+        s5.risk_level = "Medium"
+
+    MERGE (s6:Supplier {name: "Pixel Display Works"})
+    SET s6.country = "South Korea",
+        s6.risk_level = "Medium"
+
+    MERGE (s7:Supplier {name: "Precision Robotics GmbH"})
+    SET s7.country = "Germany",
+        s7.risk_level = "Low"
+
+    MERGE (s8:Supplier {name: "SunPeak Solar Materials"})
+    SET s8.country = "China",
+        s8.risk_level = "Medium"
+
+    MERGE (s9:Supplier {name: "AquaHome Appliances"})
+    SET s9.country = "Germany",
+        s9.risk_level = "Low"
+
+
+    // =========================
+    // NEW COMPONENTS
+    // =========================
+
+    MERGE (c5:Component {name: "Display Panel"})
+    SET c5.category = "Display",
+        c5.criticality = "High"
+
+    MERGE (c6:Component {name: "Processor"})
+    SET c6.category = "Electronics",
+        c6.criticality = "High"
+
+    MERGE (c7:Component {name: "Camera Module"})
+    SET c7.category = "Electronics",
+        c7.criticality = "Medium"
+
+    MERGE (c8:Component {name: "RAM"})
+    SET c8.category = "Memory",
+        c8.criticality = "Medium"
+
+    MERGE (c9:Component {name: "SSD"})
+    SET c9.category = "Storage",
+        c9.criticality = "Medium"
+
+    MERGE (c10:Component {name: "Servo Motor"})
+    SET c10.category = "Powertrain",
+        c10.criticality = "High"
+
+    MERGE (c11:Component {name: "Robotic Sensor"})
+    SET c11.category = "Sensors",
+        c11.criticality = "High"
+
+    MERGE (c12:Component {name: "Solar Panel Module"})
+    SET c12.category = "Energy Generation",
+        c12.criticality = "High"
+
+    MERGE (c13:Component {name: "Inverter"})
+    SET c13.category = "Power Electronics",
+        c13.criticality = "High"
+
+    MERGE (c14:Component {name: "Mounting Structure"})
+    SET c14.category = "Structural",
+        c14.criticality = "Medium"
+
+    MERGE (c15:Component {name: "Drum Assembly"})
+    SET c15.category = "Mechanical",
+        c15.criticality = "Medium"
+
+    MERGE (c16:Component {name: "Water Pump"})
+    SET c16.category = "Fluid Handling",
+        c16.criticality = "Medium"
+
+    MERGE (c17:Component {name: "Heating Element"})
+    SET c17.category = "Thermal",
+        c17.criticality = "Medium"
+
+
+    // =========================
+    // NEW PRODUCTS
+    // =========================
+
+    MERGE (p3:Product {name: "Smartphone"})
+    SET p3.category = "Consumer Electronics"
+
+    MERGE (p4:Product {name: "Laptop"})
+    SET p4.category = "Computing"
+
+    MERGE (p5:Product {name: "Electric Bicycle"})
+    SET p5.category = "Mobility"
+
+    MERGE (p6:Product {name: "Industrial Robot"})
+    SET p6.category = "Industrial Automation"
+
+    MERGE (p7:Product {name: "Tablet"})
+    SET p7.category = "Consumer Electronics"
+
+    MERGE (p8:Product {name: "Solar Panel"})
+    SET p8.category = "Renewable Energy"
+
+    MERGE (p9:Product {name: "Washing Machine"})
+    SET p9.category = "Home Appliances"
+
+
+    // =========================
+    // SUPPLIER → COMPONENT
+    // =========================
+
+    MERGE (s4)-[:SUPPLIES]->(c6)
+    MERGE (s4)-[:SUPPLIES]->(c5)
+    MERGE (s5)-[:SUPPLIES]->(c8)
+    MERGE (s5)-[:SUPPLIES]->(c9)
+    MERGE (s6)-[:SUPPLIES]->(c5)
+    MERGE (s7)-[:SUPPLIES]->(c10)
+    MERGE (s7)-[:SUPPLIES]->(c11)
+    MERGE (s8)-[:SUPPLIES]->(c12)
+    MERGE (s8)-[:SUPPLIES]->(c13)
+    MERGE (s9)-[:SUPPLIES]->(c15)
+    MERGE (s9)-[:SUPPLIES]->(c16)
+    MERGE (s9)-[:SUPPLIES]->(c17)
+
+
+    // =========================
+    // COMPONENT → PRODUCT
+    // =========================
+
+    // Smartphone
+    MERGE (c5)-[:USED_IN]->(p3)
+    MERGE (c6)-[:USED_IN]->(p3)
+    MERGE (c7)-[:USED_IN]->(p3)
+    MERGE (c1)-[:USED_IN]->(p3)
+    MERGE (c3)-[:USED_IN]->(p3)
+
+    // Laptop
+    MERGE (c5)-[:USED_IN]->(p4)
+    MERGE (c6)-[:USED_IN]->(p4)
+    MERGE (c8)-[:USED_IN]->(p4)
+    MERGE (c9)-[:USED_IN]->(p4)
+    MERGE (c1)-[:USED_IN]->(p4)
+    MERGE (c3)-[:USED_IN]->(p4)
+
+    // Electric Bicycle
+    MERGE (c1)-[:USED_IN]->(p5)
+    MERGE (c2)-[:USED_IN]->(p5)
+    MERGE (c3)-[:USED_IN]->(p5)
+    MERGE (c4)-[:USED_IN]->(p5)
+
+    // Industrial Robot
+    MERGE (c2)-[:USED_IN]->(p6)
+    MERGE (c3)-[:USED_IN]->(p6)
+    MERGE (c4)-[:USED_IN]->(p6)
+    MERGE (c10)-[:USED_IN]->(p6)
+    MERGE (c11)-[:USED_IN]->(p6)
+
+    // Tablet
+    MERGE (c5)-[:USED_IN]->(p7)
+    MERGE (c6)-[:USED_IN]->(p7)
+    MERGE (c1)-[:USED_IN]->(p7)
+    MERGE (c3)-[:USED_IN]->(p7)
+    MERGE (c8)-[:USED_IN]->(p7)
+
+    // Solar Panel
+    MERGE (c12)-[:USED_IN]->(p8)
+    MERGE (c13)-[:USED_IN]->(p8)
+    MERGE (c14)-[:USED_IN]->(p8)
+
+    // Washing Machine
+    MERGE (c2)-[:USED_IN]->(p9)
+    MERGE (c3)-[:USED_IN]->(p9)
+    MERGE (c15)-[:USED_IN]->(p9)
+    MERGE (c16)-[:USED_IN]->(p9)
+    MERGE (c17)-[:USED_IN]->(p9)
+
 
     // =========================
     // FACTORIES
