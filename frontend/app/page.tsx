@@ -153,6 +153,13 @@ export default function Home() {
             >
               <option>Electric Vehicle</option>
               <option>Electric Scooter</option>
+              <option>Smartphone</option>
+              <option>Laptop</option>
+              <option>Electric Bicycle</option>
+              <option>Industrial Robot</option>
+              <option>Tablet</option>
+              <option>Solar Panel</option>
+              <option>Washing Machine</option>
             </select>
           </div>
         </section>
