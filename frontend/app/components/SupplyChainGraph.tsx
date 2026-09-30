@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import type { MouseEvent } from "react";
 import {
   ReactFlow,
   Background,
@@ -107,7 +108,7 @@ export default function SupplyChainGraph({
     setNodes(initialNodes);
     setEdges(initialEdges);
   }, [initialNodes, initialEdges, setNodes, setEdges]);
-  const handleNodeClick = (_event: React.MouseEvent, node: Node) => {
+  const handleNodeClick = (_event: MouseEvent, node: Node) => {
     const clickedNode = graphNodes.find((item) => item.id === node.id);
 
     if (clickedNode) {
