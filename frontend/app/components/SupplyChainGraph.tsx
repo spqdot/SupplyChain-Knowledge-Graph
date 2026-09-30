@@ -115,18 +115,22 @@ export default function SupplyChainGraph({
     );
   }
 
-  return (
-    <div className="h-[600px] overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+    return (
+      <div className="relative h-[600px] overflow-hidden rounded-xl border border-slate-800 bg-slate-950">
+        <div className="absolute left-4 top-4 z-10 rounded-lg bg-slate-900/90 px-3 py-2 text-xs text-slate-300 shadow">
+          Click a node to explore its relationships
+      </div>
+
       <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        fitView
-        minZoom={0.2}
-        maxZoom={2}
-        proOptions={{ hideAttribution: true }}
-      >
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          fitView
+          minZoom={0.2}
+          maxZoom={2}
+          proOptions={{ hideAttribution: true }}
+        >
         <Background color="#334155" gap={20} />
         <Controls />
         <MiniMap
